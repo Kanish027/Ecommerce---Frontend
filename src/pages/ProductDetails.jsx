@@ -13,6 +13,7 @@ import Metadata from "../../Metadata";
 import { addToCart } from "../actions/Cart";
 import { addUserReview } from "../actions/AddReview";
 import { getReviews } from "../actions/GetReviews";
+import Loading from "./Loading";
 
 // Component for displaying product details
 const ProductDetails = () => {
@@ -103,7 +104,7 @@ const ProductDetails = () => {
   if (isLoading) {
     return (
       <div>
-        <div>Loading</div>
+        <Loading />
       </div>
     );
   }
