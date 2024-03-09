@@ -1,5 +1,5 @@
 
 [[redirects]]
   from = "/api/*"
-  to = "https://ecommerce-backend-3hxb.onrender.com/:splat"
+  to = "https://ecommerce-backend-3hxb.onrender.com/:splat && index.html"
   status = 200
