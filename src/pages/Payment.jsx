@@ -122,8 +122,8 @@ const Payment = () => {
                     <div className="mb-0 shipping-text">Checkout</div>
                   </div>
                   <div>
-                    <small className="" style={{ color: "#06c" }}>
-                      Show Order Summary: ₹{orderSum && orderSum.total}
+                    <small style={{ color: "#06c" }}>
+                      Order Summary: ₹{orderSum && orderSum.total}
                     </small>
                   </div>
                 </div>
