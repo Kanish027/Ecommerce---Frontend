@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux"; // Importing useDispatch and useSelector hooks from react-redux
 import { Link } from "react-router-dom"; // Importing Link component from react-router-dom
 import Metadata from "../../Metadata"; // Importing Metadata component for setting page title
-import { addToCart } from "../actions/Cart"; // Importing action for adding products to the cart
+import { addToCart, removeCartItem } from "../actions/Cart"; // Importing action for adding products to the cart
 import { getProducts } from "../actions/Products"; // Importing action for fetching products
 import Loading from "./Loading";
 
@@ -16,6 +16,7 @@ const IPad = () => {
     resultPerPage,
     filteredProductsCount,
   } = useSelector((state) => state.products); // Retrieving products state from Redux store using useSelector hook
+  const { cartItems } = useSelector((state) => state.cart);
 
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -36,6 +37,11 @@ const IPad = () => {
   // Function to handle adding a product to the cart
   const handleAddToCart = (id) => {
     dispatch(addToCart(id)); // Dispatching addToCart action with product ID
+  };
+
+  // Function to remove an item from the cart
+  const handleRemoveCartItem = (id) => {
+    dispatch(removeCartItem(id));
   };
 
   // Fetching products when component mounts or currentPage state changes
@@ -72,6 +78,9 @@ const IPad = () => {
                 {/* Mapping through products and displaying each product */}
                 {products && products.length > 0 ? (
                   products.map((product) => {
+                    const isProductAdded = cartItems.some(
+                      (item) => item.product === product._id
+                    );
                     return (
                       <div key={product._id} className="col-lg-3">
                         <div className="card rounded-4 border-0 shadow-sm">
@@ -113,13 +122,27 @@ const IPad = () => {
                                 </span>
                               </div>
                               <div>
-                                {/* Button to add product to cart */}
-                                <button
-                                  className="btn add-to-cart-btn btn-sm px-3"
-                                  onClick={() => handleAddToCart(product._id)}
-                                >
-                                  Add to cart
-                                </button>
+                                {product.stock <= 0 ? (
+                                  <small className="text-danger btn btn-sm">
+                                    Out Of Stock
+                                  </small>
+                                ) : isProductAdded ? (
+                                  <button
+                                    onClick={() =>
+                                      handleRemoveCartItem(product._id)
+                                    }
+                                    className="btn add-to-cart-btn btn-sm px-3"
+                                  >
+                                    Remove
+                                  </button>
+                                ) : (
+                                  <button
+                                    className="btn add-to-cart-btn btn-sm px-3"
+                                    onClick={() => handleAddToCart(product._id)}
+                                  >
+                                    Add to cart
+                                  </button>
+                                )}
                               </div>
                             </div>
                             {/* Product rating */}

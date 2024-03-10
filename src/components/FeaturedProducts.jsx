@@ -6,13 +6,14 @@ import { Link } from "react-router-dom";
 // Import Swiper styles
 import "swiper/css";
 import "swiper/css/pagination";
-import { addToCart } from "../actions/Cart";
+import { addToCart, removeCartItem } from "../actions/Cart";
 import Loading from "../pages/Loading";
 
 // Component to display featured products with a swiper
 const FeaturedProducts = () => {
   // Retrieve product data and loading state from Redux store
   const { isLoading, products } = useSelector((state) => state.products);
+  const { cartItems } = useSelector((state) => state.cart);
 
   // Initialize dispatch function to dispatch actions
   const dispatch = useDispatch();
@@ -20,6 +21,11 @@ const FeaturedProducts = () => {
   // Function to handle adding a product to the cart
   const handleAddToCart = (id) => {
     dispatch(addToCart(id));
+  };
+
+  // Function to remove an item from the cart
+  const handleRemoveCartItem = (id) => {
+    dispatch(removeCartItem(id));
   };
 
   return (
@@ -54,6 +60,9 @@ const FeaturedProducts = () => {
               {/* Map through products to display each product */}
               {products && products.length > 0 ? (
                 products.map((product) => {
+                  const isProductAdded = cartItems.some(
+                    (item) => item.product === product._id
+                  );
                   return (
                     <SwiperSlide
                       key={product._id}
@@ -98,13 +107,27 @@ const FeaturedProducts = () => {
                               </span>
                             </div>
                             <div>
-                              {/* Button to add product to cart */}
-                              <button
-                                className="btn add-to-cart-btn btn-sm px-3"
-                                onClick={() => handleAddToCart(product._id)}
-                              >
-                                Add to cart
-                              </button>
+                              {product.stock <= 0 ? (
+                                <small className="text-danger btn btn-sm">
+                                  Out Of Stock
+                                </small>
+                              ) : isProductAdded ? (
+                                <button
+                                  onClick={() =>
+                                    handleRemoveCartItem(product._id)
+                                  }
+                                  className="btn add-to-cart-btn btn-sm px-3"
+                                >
+                                  Remove
+                                </button>
+                              ) : (
+                                <button
+                                  className="btn add-to-cart-btn btn-sm px-3"
+                                  onClick={() => handleAddToCart(product._id)}
+                                >
+                                  Add to cart
+                                </button>
+                              )}
                             </div>
                           </div>
                           <div>

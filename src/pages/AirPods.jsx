@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux"; // Importing hooks from react-redux for managing state
 import { Link } from "react-router-dom"; // Importing Link component from react-router-dom for navigation
 import Metadata from "../../Metadata"; // Importing Metadata component for setting page title
-import { addToCart } from "../actions/Cart"; // Importing action for adding products to cart
+import { addToCart, removeCartItem } from "../actions/Cart"; // Importing action for adding products to cart
 import { getProducts } from "../actions/Products"; // Importing action to fetch products
 import Loading from "./Loading";
 
@@ -17,6 +17,7 @@ const AirPods = () => {
     resultPerPage,
     filteredProductsCount,
   } = useSelector((state) => state.products);
+  const { cartItems } = useSelector((state) => state.cart);
 
   // State variable for current page number
   const [currentPage, setCurrentPage] = useState(1);
@@ -38,6 +39,11 @@ const AirPods = () => {
   // Function to handle adding product to cart
   const handleAddToCart = (id) => {
     dispatch(addToCart(id));
+  };
+
+  // Function to remove an item from the cart
+  const handleRemoveCartItem = (id) => {
+    dispatch(removeCartItem(id));
   };
 
   // Fetching products on component mount or page change
@@ -76,6 +82,9 @@ const AirPods = () => {
                 {/* Displaying products */}
                 {products && products.length > 0 ? (
                   products.map((product) => {
+                    const isProductAdded = cartItems.some(
+                      (item) => item.product === product._id
+                    );
                     return (
                       <div key={product._id} className="col-lg-3">
                         <div className="card rounded-4 border-0 shadow-sm">
@@ -116,13 +125,27 @@ const AirPods = () => {
                                 </span>
                               </div>
                               <div>
-                                {/* Add to cart button */}
-                                <button
-                                  className="btn add-to-cart-btn btn-sm px-3"
-                                  onClick={() => handleAddToCart(product._id)}
-                                >
-                                  Add to cart
-                                </button>
+                                {product.stock <= 0 ? (
+                                  <small className="text-danger btn btn-sm">
+                                    Out Of Stock
+                                  </small>
+                                ) : isProductAdded ? (
+                                  <button
+                                    onClick={() =>
+                                      handleRemoveCartItem(product._id)
+                                    }
+                                    className="btn add-to-cart-btn btn-sm px-3"
+                                  >
+                                    Remove
+                                  </button>
+                                ) : (
+                                  <button
+                                    className="btn add-to-cart-btn btn-sm px-3"
+                                    onClick={() => handleAddToCart(product._id)}
+                                  >
+                                    Add to cart
+                                  </button>
+                                )}
                               </div>
                             </div>
                             {/* Product rating */}

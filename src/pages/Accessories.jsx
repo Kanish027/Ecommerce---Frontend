@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getProducts } from "../actions/Products";
 import { Pagination, Rating } from "@mui/material";
 import { Link } from "react-router-dom";
-import { addToCart } from "../actions/Cart";
+import { addToCart, removeCartItem } from "../actions/Cart";
 import Loading from "./Loading";
 
 // Component for displaying accessories.
@@ -17,6 +17,7 @@ const Accessories = () => {
     resultPerPage,
     filteredProductsCount,
   } = useSelector((state) => state.products);
+  const { cartItems } = useSelector((state) => state.cart);
 
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -36,6 +37,11 @@ const Accessories = () => {
   // Handle adding product to cart
   const handleAddToCart = (id) => {
     dispatch(addToCart(id));
+  };
+
+  // Function to remove an item from the cart
+  const handleRemoveCartItem = (id) => {
+    dispatch(removeCartItem(id));
   };
 
   useEffect(() => {
@@ -68,6 +74,9 @@ const Accessories = () => {
               <div className="row gy-4 mb-4">
                 {products && products.length > 0 ? (
                   products.map((product) => {
+                    const isProductAdded = cartItems.some(
+                      (item) => item.product === product._id
+                    );
                     return (
                       <div key={product._id} className="col-lg-3">
                         <div className="card rounded-4 border-0 shadow-sm">
@@ -105,12 +114,27 @@ const Accessories = () => {
                                 </span>
                               </div>
                               <div>
-                                <button
-                                  className="btn add-to-cart-btn btn-sm px-3"
-                                  onClick={() => handleAddToCart(product._id)}
-                                >
-                                  Add to cart
-                                </button>
+                                {product.stock <= 0 ? (
+                                  <small className="text-danger btn btn-sm">
+                                    Out Of Stock
+                                  </small>
+                                ) : isProductAdded ? (
+                                  <button
+                                    onClick={() =>
+                                      handleRemoveCartItem(product._id)
+                                    }
+                                    className="btn add-to-cart-btn btn-sm px-3"
+                                  >
+                                    Remove
+                                  </button>
+                                ) : (
+                                  <button
+                                    className="btn add-to-cart-btn btn-sm px-3"
+                                    onClick={() => handleAddToCart(product._id)}
+                                  >
+                                    Add to cart
+                                  </button>
+                                )}
                               </div>
                             </div>
                             <div>

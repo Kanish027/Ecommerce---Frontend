@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux"; // Import useDispatch an
 import { getProducts } from "../actions/Products"; // Import action to fetch products
 import { Pagination, Rating } from "@mui/material"; // Import Pagination and Rating components from Material-UI
 import { Link } from "react-router-dom"; // Import Link component from react-router-dom
-import { addToCart } from "../actions/Cart"; // Import action to add items to the cart
+import { addToCart, removeCartItem } from "../actions/Cart"; // Import action to add items to the cart
 import Loading from "./Loading";
 
 // Define the Watch component
@@ -17,6 +17,7 @@ const Watch = () => {
     resultPerPage,
     filteredProductsCount,
   } = useSelector((state) => state.products);
+  const { cartItems } = useSelector((state) => state.cart);
 
   // Local state variables
   const [currentPage, setCurrentPage] = useState(1);
@@ -37,6 +38,11 @@ const Watch = () => {
   // Event handler for adding a product to the cart
   const handleAddToCart = (id) => {
     dispatch(addToCart(id));
+  };
+
+  // Function to remove an item from the cart
+  const handleRemoveCartItem = (id) => {
+    dispatch(removeCartItem(id));
   };
 
   // Fetch products when the component mounts or currentPage changes
@@ -73,6 +79,9 @@ const Watch = () => {
                 {/* Mapping through products and displaying each product */}
                 {products && products.length > 0 ? (
                   products.map((product) => {
+                    const isProductAdded = cartItems.some(
+                      (item) => item.product === product._id
+                    );
                     return (
                       <div key={product._id} className="col-lg-3">
                         <div className="card rounded-4 border-0 shadow-sm">
@@ -110,12 +119,27 @@ const Watch = () => {
                                 </span>
                               </div>
                               <div>
-                                <button
-                                  className="btn add-to-cart-btn btn-sm px-3"
-                                  onClick={() => handleAddToCart(product._id)}
-                                >
-                                  Add to cart
-                                </button>
+                                {product.stock <= 0 ? (
+                                  <small className="text-danger btn btn-sm">
+                                    Out Of Stock
+                                  </small>
+                                ) : isProductAdded ? (
+                                  <button
+                                    onClick={() =>
+                                      handleRemoveCartItem(product._id)
+                                    }
+                                    className="btn add-to-cart-btn btn-sm px-3"
+                                  >
+                                    Remove
+                                  </button>
+                                ) : (
+                                  <button
+                                    className="btn add-to-cart-btn btn-sm px-3"
+                                    onClick={() => handleAddToCart(product._id)}
+                                  >
+                                    Add to cart
+                                  </button>
+                                )}
                               </div>
                             </div>
                             <div>
