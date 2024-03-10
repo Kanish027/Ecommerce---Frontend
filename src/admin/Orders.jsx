@@ -1,11 +1,10 @@
-import React, { useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux"; // Importing hooks for accessing Redux state and dispatching actions
-import { getAllOrders } from "../actions/AllOrders"; // Importing action for fetching all orders
-import Metadata from "../../Metadata"; // Importing Metadata component for setting page title
 import { DataGrid } from "@mui/x-data-grid"; // Importing DataGrid component for displaying orders in a table format
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux"; // Importing hooks for accessing Redux state and dispatching actions
 import { Link, Navigate } from "react-router-dom"; // Importing Link component for navigation
+import Metadata from "../../Metadata"; // Importing Metadata component for setting page title
+import { getAllOrders } from "../actions/AllOrders"; // Importing action for fetching all orders
 import { deleteOrders } from "../actions/DeleteOrder"; // Importing action for deleting orders
-import Loading from "../pages/Loading"; // Importing Loading component for displaying loading state
 
 // Component for displaying all orders in the admin dashboard
 const Orders = () => {
@@ -13,7 +12,7 @@ const Orders = () => {
   const dispatch = useDispatch();
 
   // Retrieving orders and loading state from Redux store
-  const { isLoading, adminOrders } = useSelector((state) => state.allOrders);
+  const { adminOrders } = useSelector((state) => state.allOrders);
   const { isAuthenticated, user } = useSelector((state) => state.user);
 
   // Function to handle order deletion
@@ -146,17 +145,13 @@ const Orders = () => {
         <h2 className="mb-3 fw-bold text-center">All Orders</h2>
         <div className="col-lg-12">
           {/* Displaying loading state or DataGrid based on loading status */}
-          {isLoading ? (
-            <Loading />
-          ) : (
-            <DataGrid
-              columns={columns}
-              rows={rows}
-              disableRowSelectionOnClick
-              autoHeight
-              pageSizeOptions={[5, 10, 25, 100]}
-            />
-          )}
+          <DataGrid
+            columns={columns}
+            rows={rows}
+            disableRowSelectionOnClick
+            autoHeight
+            pageSizeOptions={[5, 10, 25, 100]}
+          />
         </div>
       </div>
     </div>
