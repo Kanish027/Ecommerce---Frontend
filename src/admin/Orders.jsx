@@ -7,6 +7,7 @@ import { getAllOrders } from "../actions/AllOrders"; // Importing action for fet
 import { deleteOrders } from "../actions/DeleteOrder"; // Importing action for deleting orders
 import OverlayTrigger from "react-bootstrap/OverlayTrigger"; // Importing OverlayTrigger component from react-bootstrap
 import Tooltip from "react-bootstrap/Tooltip"; // Importing Tooltip component from react-bootstrap
+import Loading from "../pages/Loading";
 
 // Component for displaying all orders in the admin dashboard
 const Orders = () => {
@@ -14,7 +15,7 @@ const Orders = () => {
   const dispatch = useDispatch();
 
   // Retrieving orders and loading state from Redux store
-  const { adminOrders } = useSelector((state) => state.allOrders);
+  const { adminOrders, isLoading } = useSelector((state) => state.allOrders);
   const { isAuthenticated, user } = useSelector((state) => state.user);
 
   // Function to handle order deletion
@@ -163,19 +164,23 @@ const Orders = () => {
     <div className="container">
       {/* Setting page metadata */}
       <Metadata title={"All Orders - Admin"} />
-      <div className="row">
-        <h2 className="mb-3 fw-bold text-center">All Orders</h2>
-        <div className="col-lg-12">
-          {/* Displaying loading state or DataGrid based on loading status */}
-          <DataGrid
-            columns={columns}
-            rows={rows}
-            disableRowSelectionOnClick
-            autoHeight
-            pageSizeOptions={[5, 10, 25, 100]}
-          />
+      {isLoading ? (
+        <Loading />
+      ) : (
+        <div className="row">
+          <h2 className="mb-3 fw-bold text-center">All Orders</h2>
+          <div className="col-lg-12">
+            {/* Displaying loading state or DataGrid based on loading status */}
+            <DataGrid
+              columns={columns}
+              rows={rows}
+              disableRowSelectionOnClick
+              autoHeight
+              pageSizeOptions={[5, 10, 25, 100]}
+            />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

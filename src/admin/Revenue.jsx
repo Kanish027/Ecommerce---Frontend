@@ -16,6 +16,7 @@ import { getAdminProducts } from "../actions/AdminProducts"; // Importing action
 import { getAllOrders } from "../actions/AllOrders"; // Importing action for fetching all orders
 import { getAllUsers } from "../actions/AllUsers"; // Importing action for fetching all users
 import { Navigate } from "react-router-dom";
+import Loading from "../pages/Loading";
 
 // Registering Chart.js components
 Chartjs.register(
@@ -31,9 +32,17 @@ Chartjs.register(
 
 // Component for displaying revenue statistics
 const Revenue = () => {
-  const { adminProducts } = useSelector((state) => state.adminProducts);
-  const { adminOrders, totalRevenue } = useSelector((state) => state.allOrders);
-  const { users } = useSelector((state) => state.allUsers);
+  const { adminProducts, isLoading } = useSelector(
+    (state) => state.adminProducts
+  );
+  const {
+    adminOrders,
+    totalRevenue,
+    isLoading: orderLoading,
+  } = useSelector((state) => state.allOrders);
+  const { users, isLoading: userLoading } = useSelector(
+    (state) => state.allUsers
+  );
   const { isAuthenticated, user } = useSelector((state) => state.user);
 
   // Variable to store the count of out-of-stock products
@@ -112,71 +121,75 @@ const Revenue = () => {
 
   return (
     <div className="container">
-      <div className="row d-flex justify-content-center">
-        <div className="col-lg-12">
-          <h2 className="text-center py-3">Dashboard</h2>
-          {/* Displaying total revenue */}
-          <div className="row">
-            <div className="col-lg-12">
-              <div className="border bg-secondary-subtle py-3">
-                <p className="mb-2 fs-4  d-flex justify-content-center">
-                  Total Revenue
-                </p>
-                <small className="fs-5 d-flex justify-content-center">
-                  ₹{totalRevenue && totalRevenue.toFixed(2)}
-                </small>
-              </div>
-            </div>
-          </div>
-          {/* Displaying product, order, and user statistics */}
-          <div className="row my-5 px-4">
-            <div className="col-lg-4">
-              <div className="card bg-info-subtle rounded-1">
-                <div className="card-body">
-                  <h4 className="text-center mb-0">Products</h4>
-                  <p className="mb-0 d-flex justify-content-center my-2 fs-5">
-                    {adminProducts && adminProducts.length}
+      {isLoading && orderLoading && userLoading ? (
+        <Loading />
+      ) : (
+        <div className="row d-flex justify-content-center">
+          <div className="col-lg-12">
+            <h2 className="text-center py-3">Dashboard</h2>
+            {/* Displaying total revenue */}
+            <div className="row">
+              <div className="col-lg-12">
+                <div className="border bg-secondary-subtle py-3">
+                  <p className="mb-2 fs-4  d-flex justify-content-center">
+                    Total Revenue
                   </p>
+                  <small className="fs-5 d-flex justify-content-center">
+                    ₹{totalRevenue && totalRevenue.toFixed(2)}
+                  </small>
                 </div>
               </div>
             </div>
-            <div className="col-lg-4">
-              <div className="card bg-success-subtle rounded-1">
-                <div className="card-body">
-                  <h4 className="text-center mb-0">Orders</h4>
-                  <p className="mb-0 d-flex justify-content-center my-2 fs-5">
-                    {adminOrders && adminOrders.length}
-                  </p>
+            {/* Displaying product, order, and user statistics */}
+            <div className="row my-5 px-4">
+              <div className="col-lg-4">
+                <div className="card bg-info-subtle rounded-1">
+                  <div className="card-body">
+                    <h4 className="text-center mb-0">Products</h4>
+                    <p className="mb-0 d-flex justify-content-center my-2 fs-5">
+                      {adminProducts && adminProducts.length}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="col-lg-4">
+                <div className="card bg-success-subtle rounded-1">
+                  <div className="card-body">
+                    <h4 className="text-center mb-0">Orders</h4>
+                    <p className="mb-0 d-flex justify-content-center my-2 fs-5">
+                      {adminOrders && adminOrders.length}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="col-lg-4">
+                <div className="card bg-warning-subtle rounded-1">
+                  <div className="card-body">
+                    <h4 className="text-center mb-0">Users</h4>
+                    <p className="mb-0 d-flex justify-content-center my-2 fs-5">
+                      {users && users.length}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
-            <div className="col-lg-4">
-              <div className="card bg-warning-subtle rounded-1">
-                <div className="card-body">
-                  <h4 className="text-center mb-0">Users</h4>
-                  <p className="mb-0 d-flex justify-content-center my-2 fs-5">
-                    {users && users.length}
-                  </p>
-                </div>
+            <div className="row">
+              <div className="d-flex justify-content-center">
+                <Line options={options} data={data} />
               </div>
             </div>
-          </div>
-          <div className="row">
-            <div className="d-flex justify-content-center">
-              <Line options={options} data={data} />
-            </div>
-          </div>
-          {/* Displaying doughnut chart */}
-          <div className="row my-5">
-            <div
-              className="col-lg-12"
-              style={{ maxWidth: "500px", margin: "auto" }}
-            >
-              <Doughnut data={doughnutData} />
+            {/* Displaying doughnut chart */}
+            <div className="row my-5">
+              <div
+                className="col-lg-12"
+                style={{ maxWidth: "500px", margin: "auto" }}
+              >
+                <Doughnut data={doughnutData} />
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

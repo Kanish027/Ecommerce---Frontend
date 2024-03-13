@@ -8,6 +8,7 @@ import { deleteUsers } from "../actions/DeleteUsers"; // Importing action to del
 import OverlayTrigger from "react-bootstrap/OverlayTrigger"; // Importing OverlayTrigger component from react-bootstrap
 import Tooltip from "react-bootstrap/Tooltip"; // Importing Tooltip component from react-bootstrap
 import { UserProfile } from "../actions/User";
+import Loading from "../pages/Loading";
 
 // User component
 const User = () => {
@@ -18,7 +19,7 @@ const User = () => {
 
   // Selecting isAuthenticated, user, and users states from Redux store
   const { isAuthenticated, user } = useSelector((state) => state.user);
-  const { users } = useSelector((state) => state.allUsers);
+  const { users, isLoading } = useSelector((state) => state.allUsers);
 
   // Function to handle user deletion
   const handleDeleteUser = async (id) => {
@@ -166,20 +167,24 @@ const User = () => {
   return (
     <div className="container">
       <Metadata title={"All User - Admin"} />
-      <div className="row">
-        {/* Heading */}
-        <h2 className="mb-3 fw-bold text-center">All Users</h2>
-        <div className="col-lg-12">
-          {/* DataGrid to display users */}
-          <DataGrid
-            columns={columns}
-            rows={rows}
-            disableRowSelectionOnClick
-            autoHeight
-            pageSizeOptions={[5, 10, 25, 100]}
-          />
+      {isLoading ? (
+        <Loading />
+      ) : (
+        <div className="row">
+          {/* Heading */}
+          <h2 className="mb-3 fw-bold text-center">All Users</h2>
+          <div className="col-lg-12">
+            {/* DataGrid to display users */}
+            <DataGrid
+              columns={columns}
+              rows={rows}
+              disableRowSelectionOnClick
+              autoHeight
+              pageSizeOptions={[5, 10, 25, 100]}
+            />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
